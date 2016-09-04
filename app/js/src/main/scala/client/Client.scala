@@ -31,7 +31,10 @@ object Client extends js.JSApp {
 
     def update() = Ajax.post("/ajax/list", inputBox.value).foreach { xmlHttpRequest =>
       val fileData = deserializeFileData(xmlHttpRequest)
-//      outputBox.innerHTML = ""
+
+      // First clear the old list
+      outputBox.innerHTML = ""
+
       for (FileData(name, size) <- fileData) {
         outputBox.appendChild(
           li(
@@ -40,6 +43,7 @@ object Client extends js.JSApp {
         )
       }
     }
+
     inputBox.onkeyup = (e: dom.Event) => update()
     update()
     body.appendChild(
@@ -50,8 +54,8 @@ object Client extends js.JSApp {
       ).render
     )
 
-    def deserializeFileData(xhr: XMLHttpRequest): Seq[FileData] = {
-      upickle.default.read[Seq[FileData]](xhr.responseText)
+    def deserializeFileData(request: XMLHttpRequest): Seq[FileData] = {
+      upickle.default.read[Seq[FileData]](request.responseText)
     }
   }
 }

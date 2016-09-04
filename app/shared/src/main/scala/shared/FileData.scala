@@ -6,3 +6,4 @@ package shared
   * Created by Matthias Braun on 9/4/2016.
   */
 case class FileData(name: String, size: Long)
+

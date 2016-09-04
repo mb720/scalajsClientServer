@@ -1,5 +1,7 @@
 package server
 
+import java.io.File
+
 import akka.actor.ActorSystem
 import shared.FileData
 import spray.http.{HttpEntity, MediaTypes}
@@ -48,11 +50,22 @@ object Server extends SimpleRoutingApp {
     upickle.default.write(fileData)
   }
 
-  def list(searchPath: String) = {
+
+  def list(searchPath: String): Seq[FileData] = {
     val (dir, fileName) = searchPath.splitAt(searchPath.lastIndexOf("/") + 1)
 
-    val filesOnServer = new java.io.File("./" + dir).listFiles()
+    // Lists files in a directory
+    def listFiles(directory: String): Seq[File] = {
+      val files = new java.io.File(directory).listFiles()
+      if (files == null)
+        Seq.empty
+      else
+        files
+    }
 
+    val filesOnServer = listFiles("./" + dir)
+
+    // Turn each File into FileData
     for {
       fileOnServer <- filesOnServer
       if fileOnServer.getName.startsWith(fileName)
