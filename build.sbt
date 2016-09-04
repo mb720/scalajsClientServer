@@ -1,4 +1,3 @@
-name := "Client-server example"
 
 scalaVersion in ThisBuild := "2.11.8"
 
@@ -7,12 +6,15 @@ version in ThisBuild := "0.0.1"
 
 lazy val root = project.in(file(".")).
   aggregate(client, server).
-  settings()
+  settings(
+    name := "Client-server root"
+  )
 
 // We can run this project by calling appJS/run and appJVM/run. Type `projects` in sbt to see the name of all projects
-lazy val app = crossProject.in(file(".")).
+lazy val app = crossProject.in(file("./app")).
   settings(
-    name := "myApp",
+    // Page.scala uses this name. If you change it here, do `sbt clean` and change it in Page.scala as well
+    name := "clientServerApp",
     libraryDependencies ++= Seq(
       // The triple % gets the library in two versions: One for running on the JVM and one for running on a JavaScript engine like V8
       "com.lihaoyi" %%% "scalatags" % "0.6.0",
@@ -27,7 +29,6 @@ lazy val app = crossProject.in(file(".")).
     )
   ).
   jsSettings(
-
     // Use the faster Node.js instead of Rhino. Get Node.js from here: https://nodejs.org
     //scalaJSUseRhino in Global := false
   )
@@ -37,6 +38,6 @@ lazy val app = crossProject.in(file(".")).
 lazy val client = app.js
 lazy val server = app.jvm.settings(
   // Add the compiled JavaScript to the server's resources since the server sends the JavaScript to the client
-  (resources in Compile) += (fastOptJS in (client, Compile)).value.data
+  (resources in Compile) += (fastOptJS in(client, Compile)).value.data
 )
 

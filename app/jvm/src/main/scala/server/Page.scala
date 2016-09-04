@@ -9,7 +9,7 @@ object Page{
     html(
       head(
         // The application name as defined in build.sbt in lowercase
-        script(src:="/myapp-fastopt.js"),
+        script(src:="/clientserverapp-fastopt.js"),
         link(
           rel:="stylesheet",
           href:="https://cdnjs.cloudflare.com/ajax/libs/pure/0.5.0/pure-min.css"

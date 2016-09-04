@@ -23,7 +23,7 @@ object Client extends js.JSApp {
     val body = document.body
 
     body.appendChild(
-      p(s"Compiled on: $getCurrentDateAndTime").render
+      p(s"Page loaded on: $getCurrentDateAndTime").render
     )
 
     val inputBox = input.render
