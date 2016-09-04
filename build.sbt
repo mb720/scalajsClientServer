@@ -27,8 +27,6 @@ lazy val app = crossProject.in(file(".")).
     )
   ).
   jsSettings(
-    // See: https://www.scala-js.org/tutorial/basic/#automatically-creating-a-launcher
-    //persistLauncher in Compile := true,
 
     // Use the faster Node.js instead of Rhino. Get Node.js from here: https://nodejs.org
     //scalaJSUseRhino in Global := false
