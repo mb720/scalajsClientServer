@@ -3,16 +3,31 @@ package server
 import java.io.File
 
 import akka.actor.ActorSystem
-import shared.FileData
+import shared.{ExampleApi, FileData}
 import spray.http.{HttpEntity, MediaTypes}
 import spray.routing.SimpleRoutingApp
+import upickle.default.{Reader, Writer}
 
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration.{Duration, _}
+import scala.concurrent.{Await, Future}
 import scala.util.Properties
 
 /**
   * A simple server running on localhost. It exposes an API for the client to list files residing on the server.
   */
-object Server extends SimpleRoutingApp {
+object Server extends SimpleRoutingApp with ExampleApi {
+
+  object Router extends autowire.Server[String, Reader, Writer] {
+
+    // There must be a Reader[String] implicitly available
+    def read[Result: Reader](string: String) = upickle.default.read[Result](string)
+
+    // There must be a Writer[Result] implicitly available
+    def write[Result: Writer](result: Result) = upickle.default.write(result)
+
+    val routes = Router.route[ExampleApi](Server)
+  }
 
   /**
     * Starts the server.
@@ -34,11 +49,10 @@ object Server extends SimpleRoutingApp {
           getFromResourceDirectory("")
       } ~
         post {
-          path("ajax" / "list") {
-            extract(_.request.entity.asString) { searchString =>
+          path("ajax" / Segments) { segments =>
+            extract(_.request.entity.asString) { requestStr =>
               complete {
-                val searchResult = list(searchString)
-                serialize(searchResult)
+                handleRequest(segments, requestStr)
               }
             }
           }
@@ -46,10 +60,23 @@ object Server extends SimpleRoutingApp {
     }
   }
 
-  def serialize(fileData: Seq[FileData]): String = {
-    upickle.default.write(fileData)
-  }
+  /**
+    * Handles a request sent from the client.
+    *
+    * @param segments
+    *                contains the package, the class and the name of the API method to call
+    * @param request the request from the client
+    * @return an answer to the request
+    */
+  def handleRequest(segments: List[String], request: String) = {
 
+    // The future answer to the request
+    val futureAnswer: Future[String] =
+    // We get the API method from the segments and call it with the request as the parameter
+    Router.route[ExampleApi](Server)(autowire.Core.Request(segments, upickle.default.read[Map[String, String]](request)))
+
+    Await.result(futureAnswer, Duration(5, SECONDS))
+  }
 
   def list(searchPath: String): Seq[FileData] = {
     val (dir, fileName) = searchPath.splitAt(searchPath.lastIndexOf("/") + 1)
