@@ -1,6 +1,6 @@
 # Scala.js example with a [Spray](http://spray.io/) server
 
-This is a slightly overhauled version of Li Haoyi's [client-server example](https://github.com/lihaoyi/hands-on-scala-js/tree/master/examples/crossBuilds/clientserver) described in [Hands-on-Scala.js](http://www.lihaoyi.com/hands-on-scala-js/#IntegratingClient-Server)
+This is a slightly overhauled version of Li Haoyi's [client-server example](https://github.com/lihaoyi/hands-on-scala-js/tree/master/examples/crossBuilds/clientserver2) described in [Hands-on-Scala.js](http://www.lihaoyi.com/hands-on-scala-js/#IntegratingClient-Server)
 
 ## Get started
 
